@@ -36,6 +36,13 @@ NOTE ON ORIENTATION:
   the numbers upside-down, mirrored, or in the wrong left-to-right
   order, adjust BLOCK_ORIENTATION (try 0, -90, or 90) and/or ROTATE
   (0-3) and rerun.
+
+KNOWN LIMITATION - BOOT-TIME DISPLAY STATE:
+  All matrices lighting up fully during Pi boot is the MAX7219 chip's
+  power-on default (all segments on until something initializes it),
+  not something this script controls - it happens before Python runs.
+  Deferring a fix (blank-on-boot or a dim startup animation) to a later
+  phase to keep Phase 1 simple, per user decision.
 """
 
 import sys
@@ -50,7 +57,13 @@ from luma.led_matrix.device import max7219
 
 CASCADED = 4              # four 8x8 matrices = 32x8 total
 BLOCK_ORIENTATION = -90   # UNCONFIRMED - verify during hardware testing
-ROTATE = 0                # UNCONFIRMED - verify during hardware testing
+ROTATE = 2                # 2 = 180 degrees. Was 0; hardware test showed
+                          # text upside down, so flipping the whole canvas.
+                          # NOTE: a 180 rotation also reverses left-to-right
+                          # block order. If TEST 2 now shows "4 3 2 1" instead
+                          # of "1 2 3 4", set blocks_arranged_in_reverse_order
+                          # =True on the max7219(...) call below to fix that
+                          # without undoing the rotation.
 CONTRAST = 64              # 0-255, moderate brightness for bring-up
 
 
